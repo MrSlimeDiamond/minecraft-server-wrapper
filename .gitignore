@@ -1,0 +1,16 @@
+/target
+/versions
+/world
+/*.json
+/*.jar
+/eula.txt
+/server.properties
+/logs
+/libraries
+/config
+/gallium.db
+/world.zip
+/plugins
+/data
+/.idea
+/.vscode
