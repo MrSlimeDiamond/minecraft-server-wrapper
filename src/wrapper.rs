@@ -78,8 +78,10 @@ pub fn init(path: &str) {
                             chat_event::fire_event(Player {name: name, uuid: uuids.get(name).unwrap()}, content);
                         } else if line_type == MessageType::ServerStart {
                             start_event::fire_event();
+
                         } else if line_type == MessageType::ServerClose {
                             stop_event::fire_event();
+
                         }
             
                         println!("{}", line);
