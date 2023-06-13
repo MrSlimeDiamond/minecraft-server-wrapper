@@ -26,6 +26,8 @@ fn main() {
         .unwrap();
 
     let jar_file = config_data.get("jar_file").expect("error getting jar_file from config");
+    let xmx = config_data.get("xmx").expect("error getting xmx from config");
+    let xms = config_data.get("xms").expect("error getting xms from config");
 
     println!("Using jar file: {}", jar_file);
 
@@ -41,7 +43,7 @@ fn main() {
     });
 
     if Path::new(jar_file).exists() {
-        wrapper::init(jar_file);
+        wrapper::init(jar_file, xmx, xms);
     } else {
         println!("Minecraft jar was not found!");
         println!("Does it have the correct file name?");

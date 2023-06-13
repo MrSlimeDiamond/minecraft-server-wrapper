@@ -22,11 +22,11 @@ pub struct Player<'a> {
     pub uuid: &'a str,
 }
 
-pub fn init(path: &str) {
+pub fn init(path: &str, xmx: &str, xms: &str) {
     println!("Initializing wrapper");
     
     unsafe {
-        P = Some(Popen::create(&["java", "-jar", path], PopenConfig {
+        P = Some(Popen::create(&["java", xmx, xms, "-jar", path], PopenConfig {
             stdout: Redirection::Pipe, 
             stdin: Redirection::Pipe,
             ..Default::default()
