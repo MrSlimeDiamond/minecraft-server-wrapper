@@ -1,3 +1,5 @@
-pub fn fire_event(playername: &str, content: &str) {
+use crate::Player;
+
+pub fn fire_event(player: Player, content: &str) {
     // TODO: Event handler shenenegans
 }

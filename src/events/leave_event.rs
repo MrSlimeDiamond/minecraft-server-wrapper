@@ -1,5 +1,7 @@
 use crate::send_cmd;
+use crate::Player;
 
-pub fn fire_event(playername: &str, reason: &str) {
-    //send_cmd!("say {playername} disconnected: {reason}");
+pub fn fire_event(player: Player, reason: &str) {
+    // TODO: Event handler shenenegans
+    send_cmd!("say {} disconnected: {}",player.name,reason);
 }
