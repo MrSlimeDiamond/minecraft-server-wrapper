@@ -43,9 +43,9 @@ fn main() {
     if Path::new(jar_file).exists() {
         wrapper::init(jar_file);
     } else {
-        println!("Jar file could not be found!");
-        println!("Ensure that the Minecraft jar has the name:");
-        println!("{jar_file}");
+        println!("Minecraft jar was not found!");
+        println!("Does it have the correct file name?");
+        println!("Expected: {jar_file}");
         std::process::exit(1);
     }
 }
