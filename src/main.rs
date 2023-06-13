@@ -26,7 +26,7 @@ fn main() {
                 File::create("wrapper_config.ini").unwrap().write_all(b"jar_file = minecraft_server.jar\nxmx = -Xmx2G\nxms = -Xms2G").unwrap();
                 Config::builder().add_source(config::File::with_name("wrapper_config")).build().unwrap()
             },
-            false => panic!("could not find wrapper_config.ini!")
+            false => panic!("Something went wrong with the config files")
         }
     };
 
