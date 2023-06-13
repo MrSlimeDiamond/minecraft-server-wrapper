@@ -57,17 +57,25 @@ pub fn init(path: &str) {
                             let name: &str = line.split("]: ").nth(1).unwrap().split(" joined the game").nth(0).unwrap();
                             let uuid: &str = uuids.get(name).unwrap();
 
-                            join_event::fire_event(Player {name: name,uuid: uuid});
+                            join_event::fire_event(Player {
+                                name: name,
+                                uuid: uuid
+                            });
+                            
                         } else if line_type == MessageType::Leave {
                             let name: &str = line.split("]: ").nth(1).unwrap().split(" lost connection: ").nth(0).unwrap();
                             let reason: &str = line.split("lost connection: ").nth(1).unwrap();
 
-                            leave_event::fire_event(Player {name: name,uuid: uuids.get(name).unwrap()}, reason);
+                            leave_event::fire_event(Player {
+                                name: name,
+                                uuid: uuids.get(name).unwrap()
+                            }, reason);
+
                         } else if line_type == MessageType::Chat {
                             let name: &str = line.split("<").nth(1).unwrap().split(">").nth(0).unwrap();
                             let content: &str = line.split("> ").nth(1).unwrap();
 
-                            chat_event::fire_event(Player {name:name, uuid: uuids.get(name).unwrap()}, content);
+                            chat_event::fire_event(Player {name: name, uuid: uuids.get(name).unwrap()}, content);
                         } else if line_type == MessageType::ServerStart {
                             start_event::fire_event();
                         } else if line_type == MessageType::ServerClose {
