@@ -1,6 +1,7 @@
 use crate::regex_checker::*;
 use crate::events::*;
 
+use std::collections::HashMap;
 use std::{
     io::*,
     str,
@@ -14,19 +15,26 @@ use subprocess::{
 
 use core::fmt::Arguments;
 
-static mut p: Option<Popen> = None;
+static mut P: Option<Popen> = None;
+
+pub struct Player<'a> {
+    pub name: &'a str,
+    pub uuid: &'a str,
+}
 
 pub fn init(path: &str) {
     println!("Initializing wrapper");
     
     unsafe {
-        p = Some(Popen::create(&["java", "-jar", path], PopenConfig {
+        P = Some(Popen::create(&["java", "-jar", path], PopenConfig {
             stdout: Redirection::Pipe, 
             stdin: Redirection::Pipe,
             ..Default::default()
         }).expect("failed to execute"));
 
-        match &mut p {
+        let mut uuids: HashMap<String,String> = HashMap::new();
+
+        match &mut P {
             Some(c) => {
                 if let Some(stdout) = &mut c.stdout {
                     let reader = BufReader::new(stdout);
@@ -36,17 +44,38 @@ pub fn init(path: &str) {
             
                         let line_type = get_type(&line);
             
-                        if line_type == MessageType::Join {
-                            let playername = line.split("]: ").nth(1).unwrap().split(" joined the game").nth(0).unwrap();
-                            join_event::fire_event(playername);
+
+                        //this bs has to be turned into some regex stuff at some point pretty please
+                        //idk how to write regex
+
+                        if line_type == MessageType::AddUuid {
+                            let playername = line.split("]: ").nth(1).unwrap().split("UUID of player ").nth(1).unwrap().split(" is").nth(0).unwrap().to_string();
+                            let uuid = line.split(" is ").nth(1).unwrap().to_string();
+                            
+                            uuids.insert(playername,uuid);
+                        } else if line_type == MessageType::Join {
+                            let name: &str = line.split("]: ").nth(1).unwrap().split(" joined the game").nth(0).unwrap();
+                            let uuid: &str = uuids.get(name).unwrap();
+
+                            join_event::fire_event(Player {
+                                name: name,
+                                uuid: uuid
+                            });
+                            
                         } else if line_type == MessageType::Leave {
-                            let playername = line.split("]: ").nth(1).unwrap().split(" lost connection: ").nth(0).unwrap();
-                            let reason = line.split("lost connection: ").nth(1).unwrap();
-                            leave_event::fire_event(playername, reason);
+                            let name: &str = line.split("]: ").nth(1).unwrap().split(" lost connection: ").nth(0).unwrap();
+                            let reason: &str = line.split("lost connection: ").nth(1).unwrap();
+
+                            leave_event::fire_event(Player {
+                                name: name,
+                                uuid: uuids.get(name).unwrap()
+                            }, reason);
+
                         } else if line_type == MessageType::Chat {
-                            let playername = line.split("<").nth(1).unwrap().split(">").nth(0).unwrap();
-                            let content = line.split("> ").nth(1).unwrap();
-                            chat_event::fire_event(playername, content);
+                            let name: &str = line.split("<").nth(1).unwrap().split(">").nth(0).unwrap();
+                            let content: &str = line.split("> ").nth(1).unwrap();
+
+                            chat_event::fire_event(Player {name: name, uuid: uuids.get(name).unwrap()}, content);
                         } else if line_type == MessageType::ServerStart {
                             start_event::fire_event();
                         } else if line_type == MessageType::ServerClose {
@@ -65,7 +94,7 @@ pub fn init(path: &str) {
 
 pub fn send_cmd(args: Arguments<>) {
     unsafe {
-        match &mut p {
+        match &mut P {
             Some(c) => {
                 match &mut c.stdin {
                     Some(stdin) => {

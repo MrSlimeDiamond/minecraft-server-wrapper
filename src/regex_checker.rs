@@ -7,35 +7,28 @@ pub enum MessageType {
     Chat,
     ServerStart,
     ServerClose,
+    AddUuid,
     Unknown
 }
 
 pub fn get_type(string: &str) -> MessageType {
-    let join_regex = Regex::new(r"\[.*\] \[Server thread\/INFO\]: .* joined the game").unwrap();
-    let leave_regex: Regex = Regex::new(r"\[.*\] \[Server thread\/INFO\]: .* lost connection: .*").unwrap();
-    let chat_regex: Regex = Regex::new(r"\[.*\] \[Server thread\/INFO\]: <.*> .*").unwrap();
-    let start_regex: Regex = Regex::new(r"\[.*\] \[Server thread\/INFO\]: Done").unwrap();
-    let stop_regex: Regex = Regex::new(r"\[.*\] \[Server thread\/INFO\]: Stopping the server").unwrap();
+    let types: Vec<(Regex, MessageType)> = vec![
+        (Regex::new(r"\[.*\] \[Server thread\/INFO\]: .* joined the game").unwrap(),        MessageType::Join),
+        (Regex::new(r"\[.*\] \[Server thread\/INFO\]: .* lost connection: .*").unwrap(),    MessageType::Leave),
+        (Regex::new(r"\[.*\] \[Server thread\/INFO\]: <.*> .*").unwrap(),                   MessageType::Chat),
+        (Regex::new(r"\[.*\] \[Server thread\/INFO\]: .* joined the game").unwrap(),        MessageType::ServerStart),
+        (Regex::new(r"\[.*\] \[Server thread\/INFO\]: Stopping the server").unwrap(),       MessageType::ServerClose),
+        (Regex::new(r"\[.*\] \[User Authenticator #1/INFO\]: UUID of player").unwrap(),     MessageType::AddUuid)
+    ];
 
-    if join_regex.is_match(string) {
-        return MessageType::Join;
-    }
+    for (regex, message_type) in types {
+        match regex.is_match(string) {
+            true => {
+                return message_type
+            },
+            false => {}
+        }
+    };
 
-    if leave_regex.is_match(string) {
-        return MessageType::Leave;
-    }
-
-    if chat_regex.is_match(string) {
-        return MessageType::Chat;
-    }
-
-    if start_regex.is_match(string) {
-        return MessageType::ServerStart;
-    }
-
-    if stop_regex.is_match(string) {
-        return MessageType::ServerClose;
-    }
-
-    return MessageType::Unknown;
+   MessageType::Unknown
 }
