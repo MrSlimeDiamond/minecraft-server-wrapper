@@ -54,7 +54,7 @@ pub fn init(path: &str) {
                             
                             uuids.insert(playername,uuid);
                         } else if line_type == MessageType::Join {
-                            let name: &str = line.split("]: ").nth(1).unwrap().split(" joined the game").nth(0).unwrap();
+                            let name: &str = line.split("]: ").nth(1).unwrap().split("[").nth(0).unwrap().trim();
                             let uuid: &str = uuids.get(name).unwrap();
 
                             join_event::fire_event(Player {
