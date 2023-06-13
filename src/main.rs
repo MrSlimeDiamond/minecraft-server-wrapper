@@ -1,10 +1,7 @@
 #[macro_use]
-pub mod wrapper;
-pub use wrapper::*;
-pub mod regex_checker;
-pub use regex_checker::*;
-pub mod events;
-pub use events::*;
+mod wrapper;
+mod regex_checker;
+mod events;
 
 use std::{
     io,
@@ -13,6 +10,7 @@ use std::{
     collections::HashMap
 };
 use config::Config;
+use wrapper::send_cmd;
 
 fn main() {
     println!("Please wait...");
