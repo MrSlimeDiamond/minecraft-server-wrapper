@@ -13,7 +13,7 @@ pub enum MessageType {
 
 pub fn get_type(string: &str) -> MessageType {
     let types: Vec<(Regex, MessageType)> = vec![
-        (Regex::new(r"\[.*\] \[Server thread\/INFO\]: .*\[\/.*\]").unwrap(),        MessageType::Join),
+        (Regex::new(r"\[.*\] \[Server thread\/INFO\]: .*\[\/.*\]").unwrap(),                MessageType::Join),
         (Regex::new(r"\[.*\] \[Server thread\/INFO\]: .* lost connection: .*").unwrap(),    MessageType::Leave),
         (Regex::new(r"\[.*\] \[Server thread\/INFO\]: <.*> .*").unwrap(),                   MessageType::Chat),
         (Regex::new(r"\[.*\] \[Server thread\/INFO\]: Done").unwrap(),                      MessageType::ServerStart),
