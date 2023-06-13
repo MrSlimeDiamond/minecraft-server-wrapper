@@ -45,37 +45,43 @@ pub fn init(path: &str) {
                         let line_type = get_type(&line);
             
 
-                        //this bs has to be turned into some regex stuff at some point pretty please
-                        //idk how to write regex
+                        // TODO: Use anything but this
 
                         if line_type == MessageType::AddUuid {
                             let playername = line.split("]: ").nth(1).unwrap().split("UUID of player ").nth(1).unwrap().split(" is").nth(0).unwrap().to_string();
                             let uuid = line.split(" is ").nth(1).unwrap().to_string();
-                            
-                            uuids.insert(playername,uuid);
+                            uuids.insert(playername, uuid);
+
                         } else if line_type == MessageType::Join {
                             let name: &str = line.split("]: ").nth(1).unwrap().split("[").nth(0).unwrap().trim();
                             let uuid: &str = uuids.get(name).unwrap();
 
                             join_event::fire_event(Player {
-                                name: name,
-                                uuid: uuid
+                                name,
+                                uuid
                             });
                             
                         } else if line_type == MessageType::Leave {
                             let name: &str = line.split("]: ").nth(1).unwrap().split(" lost connection: ").nth(0).unwrap();
                             let reason: &str = line.split("lost connection: ").nth(1).unwrap();
+                            let uuid = uuids.get(name);
+                            if uuid == None {
+                                continue;
+                            }
 
                             leave_event::fire_event(Player {
-                                name: name,
-                                uuid: uuids.get(name).unwrap()
+                                name,
+                                uuid: uuid.unwrap()
                             }, reason);
 
                         } else if line_type == MessageType::Chat {
                             let name: &str = line.split("<").nth(1).unwrap().split(">").nth(0).unwrap();
                             let content: &str = line.split("> ").nth(1).unwrap();
 
-                            chat_event::fire_event(Player {name: name, uuid: uuids.get(name).unwrap()}, content);
+                            chat_event::fire_event(Player {
+                                name, uuid: uuids.get(name).unwrap() 
+                            }, content);
+                            
                         } else if line_type == MessageType::ServerStart {
                             start_event::fire_event();
 
