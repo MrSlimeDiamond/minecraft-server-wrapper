@@ -42,7 +42,7 @@ async fn main() {
         .try_deserialize::<HashMap<String, String>>()
         .unwrap();
 
-    let java_exec = config_data.get("java_exec").       expect("error: java_exec does not exist in wrapper_config")
+    let java_exec = config_data.get("java_exec").       expect("error: java_exec does not exist in wrapper_config");
     let jar_file = config_data.get("jar_file").         expect("error: jar_file value does not exist in wrapper_config");
     let gui = config_data.get("gui").                   expect("error: gui value does not exist in wrapper_config");
     let xmx = config_data.get("xmx").                   expect("error: xmx value does not exist in wrapper_config");
