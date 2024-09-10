@@ -23,11 +23,11 @@ pub struct Player<'a> {
     pub uuid: &'a str,
 }
 
-pub async fn init(path: &str, xmx: &str, xms: &str, gui: &str) {
+pub async fn init(java_exec: &str, path: &str, xmx: &str, xms: &str, gui: &str) {
     println!("Initializing wrapper");
     
     unsafe {
-        P = Some(Popen::create(&["java", xmx, xms, "-jar", path, match gui { "false" => "nogui", _ => "" }], PopenConfig {
+        P = Some(Popen::create(&[java_exec, xmx, xms, "-jar", path, match gui { "false" => "nogui", _ => "" }], PopenConfig {
             stdout: Redirection::Pipe, 
             stdin: Redirection::Pipe,
             ..Default::default()
