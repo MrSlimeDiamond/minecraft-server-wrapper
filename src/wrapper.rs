@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use std::{
     io::*,
     str,
+    process
 };
 
 use subprocess::{
@@ -34,8 +35,10 @@ pub async fn init(path: &str, xmx: &str, xms: &str, gui: &str) {
 
         tokio::spawn(async move {
             let mut uuids: HashMap<String,String> = HashMap::new();
+            let child = P.as_mut().unwrap();
 
             match &mut P {
+
                 Some(c) => {
                     if let Some(stdout) = &mut c.stdout {
                         let reader = BufReader::new(stdout);
@@ -93,6 +96,10 @@ pub async fn init(path: &str, xmx: &str, xms: &str, gui: &str) {
                 
                             println!("{}", line);
                         }
+
+                        child.wait();
+                        println!("Minecraft server has stopped");
+                        process::exit(0x0100);
                     }
                 },
                 None => println!("Child is null!"),
