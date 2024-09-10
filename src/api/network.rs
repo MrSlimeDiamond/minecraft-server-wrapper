@@ -1,6 +1,22 @@
 use std::collections::HashMap;
 use config::Config;
-use rocket::{self, serde::{Serialize, Deserialize, json::{Json, serde_json::json}}, log::LogLevel, request::{FromRequest, Outcome, Request}, http::Status};
+use rocket::{
+    self, 
+    serde::{
+        Serialize, 
+        Deserialize, json::{
+            Json, 
+            serde_json::json
+        }
+    }, 
+    log::LogLevel, 
+    request::{
+        FromRequest, 
+        Outcome, 
+        Request
+    }, 
+    http::Status
+};
 use crate::send_cmd;
 
 
@@ -46,8 +62,14 @@ struct OkJson {
 }
 
 #[post("/sendcmd", format = "application/json", data = "<body>")]
-fn sendcommand(body: Json<SendcmdJson>, _k: ApiKey) -> Json<OkJson> {
+fn send_command_json(body: Json<SendcmdJson>, _k: ApiKey) -> Json<OkJson> {
     send_cmd!("{}", body.command);
+    Json(OkJson { status: 200 })
+}
+
+#[post("/sendcmd", format = "plain", data = "<body>")]
+fn send_command_plaintext(body: &str, _k: ApiKey) -> Json<OkJson> {
+    send_cmd!("{}", body);
     Json(OkJson { status: 200 })
 }
 
@@ -64,5 +86,5 @@ pub fn start() -> _ {
     config.log_level = LogLevel::Critical;
     config.port = config_file.get("api-port").unwrap().parse().unwrap();
 
-    rocket::custom(config).mount("/", routes![sendcommand])
+    rocket::custom(config).mount("/", routes![send_command_json, send_command_plaintext])
 }
