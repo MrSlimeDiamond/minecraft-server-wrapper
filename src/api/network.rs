@@ -27,7 +27,7 @@ impl<'r> FromRequest<'r> for ApiKey<'r> {
             .unwrap().get("api-key").unwrap()
         }
 
-        match req.headers().get_one("key") {
+        match req.headers().get_one("X-API-Key") {
             None => Outcome::Error((Status::BadRequest, ApiKeyError::Missing)),
             Some(key) if is_valid(key) => Outcome::Success(ApiKey(key)),
             Some(_) => Outcome::Error((Status::BadRequest, ApiKeyError::Invalid)),
