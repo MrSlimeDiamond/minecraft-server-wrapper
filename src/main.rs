@@ -64,7 +64,7 @@ async fn main() {
     });
 
     if Path::new(&jar_file).exists() {
-        wrapper::init(jar_file, xmx, xms, gui).await;
+        wrapper::init(java_exec, jar_file, xmx, xms, gui).await;
 
         tokio::task::spawn_blocking(|| {
             network::main();
